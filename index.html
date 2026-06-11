@@ -73,6 +73,7 @@
     const formName = document.querySelector('.add-form-name');
     const formText = document.querySelector('.add-form-text');
     const sendButton = document.querySelector('.add-form-button');
+    const likeButton = document.querySelector('.like-button');
 
     //получить текущую дату/время, функция
     function getCurrentDate() {
@@ -85,10 +86,64 @@
       return (day + '.' + month + '.' + year + ' ' + hour + ':' + min);
     }
 
-    //создать новый комментарий, функция
+    //лента комментариев как массив объектов
+    const comments = [
+       {
+        name: "Глеб Фокин",
+        commentText: "Это будет первый комментарий на этой странице",
+        dataTime: "12.02.22 12:18",
+        isLike: false,
+        likesCount: 3,
+      },
+      {
+        name: "Варвара Н.",
+        commentText: "Мне нравится как оформлена эта страница! ❤",
+        dataTime: "13.02.22 19:22",
+        isLike: true,
+        likesCount: 75
+      }
+    ];
+
+    //рендер комментариев
+    function renderComments(comments) {
+      commentsList.innerHTML = comments.map(comment => `
+        <li class="comment">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.dataTime}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+            ${comment.commentText}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likesCount}</span>
+              <button class="like-button ${comment.isLike ? '-active-like' : ''}"></button>
+            </div>
+          </div>
+        </li>
+      `).join('');
+
+      //поставить/убрать лайк
+      document.querySelectorAll('.like-button').forEach((button, index) => {
+        button.addEventListener('click', () => {
+          const comment = comments[index];
+          if (comment.isLike) {
+            comment.likesCount--;
+            comment.isLike = false;
+          } else {
+            comment.likesCount++;
+            comment.isLike = true;
+          }
+          renderComments(comments);
+        });
+      });
+    }
+
+    //добавить новый комментарий
     function newComment() {
-      //шаблон комментария
-      const template = document.querySelector('.comment');
 
       //проверка заполненности полей
       let hasEmptyFields = false;
@@ -109,17 +164,14 @@
         return;
       }
 
-      //копировать последний комментарий
-      let inputNewComment = template.cloneNode(true);
-
-      //заменить содержимое
-      inputNewComment.querySelector('.comment-header div:first-child').textContent = formName.value;
-      inputNewComment.querySelector('.comment-header div:last-child').textContent = getCurrentDate();
-      inputNewComment.querySelector('.comment-text').textContent = formText.value;
-      inputNewComment.querySelector('.likes-counter').textContent = "0";
-
-      //добавить комментарий в конец контейнера
-      commentsList.appendChild(inputNewComment);
+      //добавить новый комментарий как объект массива
+      comments.push({
+        name: formName.value,
+        commentText: formText.value,
+        dataTime: getCurrentDate(),
+        isLike: false,
+        likesCount: 0
+      });
 
       //очистить поля в форме
       formName.value = '';
@@ -128,10 +180,15 @@
       //убрать красные рамки у полей, если они были
       formName.style.border ='';
       formText.style.border ='';
-    }
 
-    //отправить комментарий кликом на кнопку
+      renderComments(comments);
+    }
+    
+    //отправить комментарий нажатием кнопки
     sendButton.addEventListener('click', newComment);
+
+    //рендер комментариев при загрузке страницы
+    renderComments(comments);
 
     console.log("It works!");
   </script>
