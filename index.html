@@ -70,6 +70,7 @@
     //добавить комментарий
     //получить нужные элементы из DOM
     const commentsList = document.querySelector('.comments');
+    const comment = document.querySelector('.comment');
     const formName = document.querySelector('.add-form-name');
     const formText = document.querySelector('.add-form-text');
     const sendButton = document.querySelector('.add-form-button');
@@ -129,6 +130,7 @@
       //поставить/убрать лайк
       document.querySelectorAll('.like-button').forEach((button, index) => {
         button.addEventListener('click', () => {
+          event.stopPropagation();
           const comment = comments[index];
           if (comment.isLike) {
             comment.likesCount--;
@@ -140,6 +142,16 @@
           renderComments(comments);
         });
       });
+
+      //цитировать комментарий
+      document.querySelectorAll('.comment').forEach((addedComment, index) => { //перебрать массив с комментариями
+        //добавить обработчик клика на комментарий
+        addedComment.addEventListener('click', () => {
+          const comment = comments[index];
+          const quote = `>${comment.name}\n>${comment.commentText}\n`;
+          formText.value = quote;
+        })
+      });
     }
 
     //добавить новый комментарий
@@ -149,25 +161,29 @@
       let hasEmptyFields = false;
 
       if (formName.value === '') {
-        formName.style.border ='2px solid red';
+        formName.style.border = '2px solid red';
         hasEmptyFields = true;
       }
       if (formText.value === '') {
-        formText.style.border ='2px solid red';
+        formText.style.border = '2px solid red';
         hasEmptyFields = true;
       }
       if (hasEmptyFields) {
         setTimeout(() => {
-          formName.style.border ='';
-          formText.style.border ='';
+          formName.style.border = '';
+          formText.style.border = '';
         }, 2000);
         return;
       }
 
+      //обработка html-разметки в полях формы
+      const resultName = formName.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      const resultText = formText.value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
       //добавить новый комментарий как объект массива
       comments.push({
-        name: formName.value,
-        commentText: formText.value,
+        name: resultName,
+        commentText: resultText,
         dataTime: getCurrentDate(),
         isLike: false,
         likesCount: 0
