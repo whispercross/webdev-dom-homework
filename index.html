@@ -67,6 +67,8 @@
     "use strict";
     // Код писать здесь
 
+    /*код из предыдущей домашки, начало
+
     //добавить комментарий
     //получить нужные элементы из DOM
     const commentsList = document.querySelector('.comments');
@@ -206,6 +208,36 @@
     //рендер комментариев при загрузке страницы
     renderComments(comments);
 
+    код из предыдущей домашки, конец */
+    //
+
+    //получить нужные элементы из DOM
+    const sendButton = document.querySelector('.add-form-button');
+
+    //получить список комментариев
+    function renderComments(comments) {
+      const getPromise = fetch("https://wedev-api.sky.pro/api/v1/alena-strelkova/comments", {
+        method: "GET",
+      });
+      getPromise.then((response) => {
+        const jsonPromise = response.json();
+        jsonPromise.then((responseData) => {
+          console.log(responseData);
+        });
+      });
+    }
+
+    //добавить новый комментарий
+    let newComment = fetch('https://wedev-api.sky.pro/api/v1/alena-strelkova/comments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ "text": "Текст коммента", "name": "Алёна С." }),
+    })
+      .then(response => response.json());
+
+    sendButton.addEventListener('click', newComment);
     console.log("It works!");
   </script>
 </html>
