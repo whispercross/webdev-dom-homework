@@ -209,7 +209,16 @@
     renderComments(comments);
 
     код из предыдущей домашки, конец */
-    //
+    
+    /*
+    fetch(url, options)
+     .then(response => {
+      // Обрабатываем успешный ответ
+      })
+      .catch(error => {.
+      // Обрабатываем ошибки
+      });
+    */
 
     //получить нужные элементы из DOM
     const sendButton = document.querySelector('.add-form-button');
@@ -236,6 +245,7 @@
       body: JSON.stringify({ "text": "Текст коммента", "name": "Алёна С." }),
     })
       .then(response => response.json());
+    renderComments();
 
     sendButton.addEventListener('click', newComment);
     console.log("It works!");
